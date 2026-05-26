@@ -1,0 +1,4 @@
+providers = ["nodejs"]
+
+[phases.install]
+cmds = ["cd backend && npm install && npm install -g tsx"]

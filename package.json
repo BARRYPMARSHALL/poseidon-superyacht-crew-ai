@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
-    "start": "node backend/node_modules/.bin/tsx backend/src/server.ts",
+    "start": "cd backend && tsx src/server.ts",
     "dev": "cd backend && npm run dev"
   }
 }

@@ -1,1 +1,1 @@
-web: cd backend && node node_modules/.bin/tsx src/server.ts
+web: cd /app/backend && PORT=3100 tsx src/server.ts
