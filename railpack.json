@@ -1,0 +1,13 @@
+{
+  "provider": "node",
+  "build": {
+    "commands": [
+      "cd backend && npm install",
+      "cd frontend && npm install && npm run build"
+    ]
+  },
+  "start": {
+    "command": "cd backend && node node_modules/.bin/tsx src/server.ts"
+  },
+  "runtime": "node22"
+}
