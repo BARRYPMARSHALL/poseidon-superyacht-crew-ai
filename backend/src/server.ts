@@ -21,7 +21,7 @@ import db from './database';
 import { generateId } from './utils/helpers';
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3100');
+const PORT = parseInt(process.env.POSEIDON_PORT || '3100');
 
 // Middleware
 app.use(helmet());
@@ -170,18 +170,31 @@ cron.schedule('0 9 1 * *', async () => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`⚓ Poseidon running on port ${PORT}`);
-  console.log(`   Agents scheduled: Cerberus (every 6h), Nereus (daily 8am), Hermes (monthly 1st)`);
-  console.log(`   Health check: http://localhost:${PORT}/api/health`);
+// Wrap startup in try/catch for Railway debugging
+async function start(): Promise<void> {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`⚓ Poseidon running on 0.0.0.0:${PORT}`);
+    console.log(`   DB path: ${process.env.DATABASE_PATH || 'default'}`);
+    console.log(`   Agents: Cerberus (every 6h), Nereus (daily 8am), Hermes (monthly 1st)`);
+    console.log(`   Health: :${PORT}/api/health`);
 
-  // Run initial scans on startup
-  setTimeout(async () => {
-    console.log('[Startup] Running initial agent scans...');
-    await cerberusScan();
-    await nereusScan();
-    console.log('[Startup] Initial scans complete.');
-  }, 2000);
+    // Run initial scans on startup
+    setTimeout(async () => {
+      try {
+        console.log('[Startup] Running initial agent scans...');
+        await cerberusScan();
+        await nereusScan();
+        console.log('[Startup] Initial scans complete.');
+      } catch (e: any) {
+        console.error('[Startup] Agent scan error:', e.message);
+      }
+    }, 3000);
+  });
+}
+
+start().catch(e => {
+  console.error('[FATAL] Server startup failed:', e.message, e.stack);
+  process.exit(1);
 });
 
 export default app;
