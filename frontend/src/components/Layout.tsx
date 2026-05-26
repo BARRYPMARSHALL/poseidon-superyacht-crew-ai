@@ -2,11 +2,11 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { setToken } from '../lib/api';
 
 const navItems = [
-  { to: '/', label: 'Bridge', icon: '🎯' },
-  { to: '/crew', label: 'Crew', icon: '👥' },
-  { to: '/certs', label: 'Certifications', icon: '📜' },
-  { to: '/alerts', label: 'Alerts', icon: '🔔' },
-  { to: '/compliance', label: 'Compliance', icon: '🛡️' },
+  { to: '/app', label: 'Bridge', icon: '🎯' },
+  { to: '/app/crew', label: 'Crew', icon: '👥' },
+  { to: '/app/certs', label: 'Certifications', icon: '📜' },
+  { to: '/app/alerts', label: 'Alerts', icon: '🔔' },
+  { to: '/app/compliance', label: 'Compliance', icon: '🛡️' },
 ];
 
 export default function Layout({ user, setUser }: { user: any; setUser: (u: any) => void }) {

@@ -192,9 +192,10 @@ for (const member of crewMembers) {
 const userId = generateId();
 const bcrypt = require('bcryptjs');
 const hash = bcrypt.hashSync('captain123', 12);
-db.prepare(`INSERT INTO users (id, organization_id, email, password_hash, name, role, vessel_ids)
-  VALUES (?, ?, ?, ?, ?, 'captain', ?)`)
-  .run(userId, orgId, 'captain@oceanstar.yacht', hash, 'James Mitchell', JSON.stringify([vesselId]));
+const trialEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+db.prepare(`INSERT INTO users (id, organization_id, email, password_hash, name, role, vessel_ids, trial_ends_at, subscription_tier)
+  VALUES (?, ?, ?, ?, ?, 'captain', ?, ?, 'captain')`)
+  .run(userId, orgId, 'captain@oceanstar.yacht', hash, 'James Mitchell', JSON.stringify([vesselId]), trialEnd);
 
 console.log('✅ Demo data seeded successfully!');
 console.log(`   Organization: ${orgId}`);

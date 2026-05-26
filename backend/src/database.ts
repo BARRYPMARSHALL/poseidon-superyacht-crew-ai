@@ -253,6 +253,8 @@ export function initializeDatabase(): void {
       name TEXT NOT NULL,
       role TEXT NOT NULL CHECK(role IN ('admin', 'captain', 'officer', 'owner', 'crew', 'readonly')),
       vessel_ids TEXT, -- JSON array, null = all org vessels
+      trial_ends_at TEXT,
+      subscription_tier TEXT DEFAULT 'skipper',
       last_login TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))

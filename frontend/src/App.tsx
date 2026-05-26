@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { api, setToken, getToken } from './lib/api';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import CrewList from './pages/CrewList';
 import CrewDetail from './pages/CrewDetail';
@@ -35,12 +37,12 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#060d1a] flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">⚓</div>
-          <div className="text-gold-400 text-lg font-semibold">Poseidon</div>
-          <div className="text-slate-400 text-sm mt-2">Superyacht Crew AI</div>
-          <div className="mt-4 w-8 h-8 border-2 border-gold-400 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="text-[#c9a84c] text-lg font-semibold">Poseidon</div>
+          <div className="text-[#8b9bb4] text-sm mt-2">Superyacht Crew AI</div>
+          <div className="mt-4 w-8 h-8 border-2 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       </div>
     );
@@ -49,8 +51,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={getToken() ? <Navigate to="/" replace /> : <Login setUser={setUser} />} />
-        <Route path="/" element={<ProtectedRoute><Layout user={user} setUser={setUser} /></ProtectedRoute>}>
+        {/* Public routes */}
+        <Route path="/" element={getToken() ? <Navigate to="/app" replace /> : <Landing />} />
+        <Route path="/login" element={getToken() ? <Navigate to="/app" replace /> : <Login setUser={setUser} />} />
+        <Route path="/signup" element={getToken() ? <Navigate to="/app" replace /> : <Signup setUser={setUser} />} />
+
+        {/* Protected app routes */}
+        <Route path="/app" element={<ProtectedRoute><Layout user={user} setUser={setUser} /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="crew" element={<CrewList />} />
           <Route path="crew/:crewId" element={<CrewDetail />} />
@@ -58,6 +65,7 @@ export default function App() {
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="compliance" element={<CompliancePage />} />
         </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
