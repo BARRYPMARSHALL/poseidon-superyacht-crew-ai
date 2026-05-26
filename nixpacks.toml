@@ -1,9 +1,8 @@
+providers = ["node", "staticfile"]
+
 [variables]
 PORT = "3100"
 NODE_ENV = "production"
-
-[providers]
-node = {}
 
 [phases.setup]
 nixPkgs = ["nodejs_22"]
