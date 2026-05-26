@@ -1,0 +1,22 @@
+{
+  "name": "Poseidon — Superyacht Crew AI",
+  "short_name": "Poseidon",
+  "description": "AI Chief Officer for Superyacht Crew Management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1628",
+  "theme_color": "#c9a84c",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/anchor-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/anchor-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
