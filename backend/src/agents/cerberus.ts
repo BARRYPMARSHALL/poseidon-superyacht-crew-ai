@@ -8,6 +8,7 @@ interface ExpiringCert {
   cert_name: string;
   cert_type: string;
   expiry_date: string;
+  status: string;
   first_name: string;
   last_name: string;
   position: string;

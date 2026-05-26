@@ -33,7 +33,7 @@ router.post('/:vesselId/generate', (req: AuthRequest, res: Response) => {
 
     findings = `MLC 2006 Compliance Audit — ${vessel.name} (${now})\n\n`;
     findings += `Flag State: ${vessel.flag_state}\n`;
-    findings += `Total Active Crew: ${db.prepare('SELECT COUNT(*) as count FROM crew_members WHERE vessel_id = ? AND status = \'active\'').get(vesselId)['count']}\n\n`;
+    findings += `Total Active Crew: ${(db.prepare('SELECT COUNT(*) as count FROM crew_members WHERE vessel_id = ? AND status = \'active\'').get(vesselId) as any).count}\n\n`;
     findings += `1. Certification Status: ${expiredCerts.count} expired certifications found.\n`;
     findings += `2. Seafarer Employment Agreements: ${crewWithoutSEA.count} crew members without active SEA.\n`;
     findings += `3. Visa Compliance: ${expiringVisas.count} visas expiring within 30 days.\n`;

@@ -1,8 +1,12 @@
+[variables]
+PORT = "3100"
+NODE_ENV = "production"
+
 [providers]
 node = {}
 
 [phases.setup]
-nixPkgs = ["nodejs"]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
 cmds = [

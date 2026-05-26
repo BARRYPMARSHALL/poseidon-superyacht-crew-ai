@@ -3,14 +3,14 @@
   "provider": "node",
   "nodeVersion": "22",
   "build": {
-    "aptPackages": [],
     "buildCommands": [
       "cd backend && npm install",
       "cd frontend && npm install && npm run build"
     ]
   },
   "deploy": {
-    "startCommand": "cd backend && node node_modules/.bin/tsx src/server.ts",
-    "healthcheckCommand": "curl -f http://localhost:${PORT:-3100}/api/health"
+    "startCommand": "node backend/node_modules/.bin/tsx backend/src/server.ts",
+    "healthcheckCommand": "curl -f http://localhost:3100/api/health",
+    "port": 3100
   }
 }
