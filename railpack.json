@@ -1,14 +1,16 @@
 {
+  "$schema": "https://railway.com/railpack.schema.json",
   "provider": "node",
   "nodeVersion": "22",
   "build": {
     "aptPackages": [],
-    "commands": [
+    "buildCommands": [
       "cd backend && npm install",
       "cd frontend && npm install && npm run build"
     ]
   },
-  "start": {
-    "command": "cd backend && node node_modules/.bin/tsx src/server.ts"
+  "deploy": {
+    "startCommand": "cd backend && node node_modules/.bin/tsx src/server.ts",
+    "healthcheckCommand": "curl -f http://localhost:${PORT:-3100}/api/health"
   }
 }
