@@ -1,4 +1,14 @@
-providers = ["nodejs"]
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["cd backend && npm install && npm install -g tsx"]
+cmds = [
+  "cd backend && npm install",
+  "cd frontend && npm install && npm run build"
+]
+
+[variables]
+PORT = "3100"
+NODE_ENV = "production"
