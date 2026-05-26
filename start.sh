@@ -1,6 +1,6 @@
 #!/bin/bash
 # Poseidon — Superyacht Crew AI
-# Complete startup script
+# Works on Railway and locally
 
 set -e
 
@@ -12,63 +12,35 @@ echo "⚓ Poseidon — Superyacht Crew AI"
 echo "================================"
 echo ""
 
-# Check if database exists, seed if not
-if [ ! -f "$BACKEND_DIR/data/poseidon.db" ]; then
-  echo "📦 First run: Seeding demo database..."
-  cd "$BACKEND_DIR" && npx tsx src/seed.ts
-  echo ""
-fi
-
-# Start backend
-echo "🔧 Starting backend API on port 3100..."
-cd "$BACKEND_DIR"
-npx tsx src/server.ts &
-BACKEND_PID=$!
-sleep 2
-
-# Verify backend
-if curl -s http://localhost:3100/api/health > /dev/null 2>&1; then
-  echo "✅ Backend operational"
-else
-  echo "❌ Backend failed to start"
-  kill $BACKEND_PID 2>/dev/null
+# Check for Node.js
+if ! command -v node &> /dev/null; then
+  echo "❌ Node.js is required but not installed."
   exit 1
 fi
 
-# Start frontend
-echo "🎨 Starting frontend on port 5173..."
-cd "$FRONTEND_DIR"
-npx vite --host &
-FRONTEND_PID=$!
-sleep 2
+# Install deps if needed
+if [ ! -d "$BACKEND_DIR/node_modules" ]; then
+  echo "📦 Installing backend dependencies..."
+  cd "$BACKEND_DIR" && npm install --production
+fi
 
-echo ""
-echo "================================"
-echo "🚀 Poseidon is live!"
-echo ""
-echo "   Dashboard:  http://localhost:5173"
-echo "   API:        http://localhost:3100"
-echo "   Health:     http://localhost:3100/api/health"
-echo ""
-echo "   Demo Login: captain@oceanstar.yacht"
-echo "   Password:   captain123"
-echo ""
-echo "   Vessel:     M/Y OCEAN STAR (65m Feadship)"
-echo "   Crew:       16 members across 5 departments"
-echo "   Flag:       Cayman Islands"
-echo "================================"
-echo ""
-echo "Agents running:"
-echo "  🐕 Cerberus — Cert scanning (every 6h)"
-echo "  🌊 Nereus   — Rotation checks (daily 8am)"
-echo "  💰 Plutus   — Payroll engine"
-echo "  📨 Hermes   — Owner reports (monthly 1st)"
-echo "  🎓 Mentor   — Crew development"
-echo ""
-echo "Press Ctrl+C to stop all services."
+if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
+  echo "📦 Installing frontend dependencies..."
+  cd "$FRONTEND_DIR" && npm install
+fi
 
-# Trap cleanup
-trap "echo 'Shutting down...'; kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; exit 0" SIGINT SIGTERM
+# Build frontend if not built
+if [ ! -f "$FRONTEND_DIR/dist/index.html" ]; then
+  echo "🔨 Building frontend..."
+  cd "$FRONTEND_DIR" && npm run build
+fi
 
-# Wait
-wait
+echo "🔧 Starting Poseidon..."
+cd "$BACKEND_DIR"
+
+# Use node directly (works on Railway where npx may not be in PATH)
+if command -v npx &> /dev/null; then
+  exec npx tsx src/server.ts
+else
+  exec node ./node_modules/.bin/tsx src/server.ts
+fi

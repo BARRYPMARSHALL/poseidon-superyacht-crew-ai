@@ -1,0 +1,14 @@
+{
+  "name": "poseidon-superyacht-crew-ai",
+  "version": "1.0.0",
+  "description": "⚓ AI Chief Officer for Superyacht Crew Management",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev"
+  }
+}

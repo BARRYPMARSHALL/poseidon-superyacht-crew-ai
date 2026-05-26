@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -16,6 +17,8 @@ import dashboardRoutes from './routes/dashboard';
 import complianceRoutes from './routes/compliance';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
+import db from './database';
+import { generateId } from './utils/helpers';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3100');
@@ -106,6 +109,10 @@ app.get('/api/agents/hermes/offboarding/:crewId', async (req, res) => {
   }
 });
 
+// Serve frontend in production
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDist));
+
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({
@@ -117,12 +124,28 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+// SPA fallback — serve index.html for any non-API route (Express 5 compatible)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  if (req.path.includes('.')) return next(); // static files
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
+
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
 
-// Initialize database and start server
+// Initialize database and check if seed needed
 initializeDatabase();
+
+// Auto-seed if no vessels exist (first deploy on Railway / fresh DB)
+const vesselCount = db.prepare('SELECT COUNT(*) as count FROM vessels').get() as any;
+if (vesselCount.count === 0) {
+  console.log('[Init] No vessels found — running seed...');
+  const { runSeed } = require('./seed');
+  runSeed(db, generateId);
+  console.log('[Init] Seed complete.');
+}
 
 // Schedule agents
 // Cerberus: Every 6 hours (cert scanning)
