@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyMaxRetries = 5
+
+[service]
+port = "3100"
