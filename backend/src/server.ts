@@ -18,10 +18,19 @@ import complianceRoutes from './routes/compliance';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
 import query from './database';
-import { generateId } from './utils/helpers';
+
+// Crash handlers — log errors before exit
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err.message, err.stack);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] Unhandled rejection:', reason);
+  process.exit(1);
+});
 
 const app = express();
-const PORT = parseInt(process.env.POSEIDON_PORT || '3100');
+const PORT = 3100;
 
 // Middleware
 app.use(helmet());
@@ -30,158 +39,95 @@ app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/orgs', orgRoutes);
-app.use('/api/vessels', vesselRoutes);
-app.use('/api/crew', crewRoutes);
-app.use('/api/certs', certRoutes);
-app.use('/api/alerts', alertRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/compliance', complianceRoutes);
-
-// Agent API endpoints
-app.get('/api/agents/cerberus/scan', async (_req, res) => {
-  try {
-    const result = await cerberusScan();
-    res.json(result);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/agents/nereus/scan', async (_req, res) => {
-  try {
-    const result = await nereusScan();
-    res.json(result);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/agents/cerberus/renewal-plan/:crewId', (req, res) => {
-  const { generateRenewalPlan } = require('./agents/cerberus');
-  try {
-    const plan = generateRenewalPlan(req.params.crewId);
-    res.json(plan || { error: 'Crew member not found' });
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/agents/nereus/rotation-plan/:vesselId', (req, res) => {
-  const { getRotationPlan } = require('./agents/nereus');
-  try {
-    const plan = getRotationPlan(req.params.vesselId);
-    res.json(plan);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.post('/api/agents/hermes/owner-report/:vesselId', async (req, res) => {
-  const { generateOwnerReport } = require('./agents/hermes');
-  try {
-    const report = await generateOwnerReport(req.params.vesselId);
-    res.json(report);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/agents/hermes/onboarding/:crewId', async (req, res) => {
-  const { generateCrewOnboarding } = require('./agents/hermes');
-  try {
-    const result = await generateCrewOnboarding(req.params.crewId);
-    res.json(result);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/agents/hermes/offboarding/:crewId', async (req, res) => {
-  const { generateCrewOffboarding } = require('./agents/hermes');
-  try {
-    const result = await generateCrewOffboarding(req.params.crewId);
-    res.json(result);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Serve frontend in production
-const frontendDist = path.join(__dirname, '../../frontend/dist');
-app.use(express.static(frontendDist));
-
-// Health check
+// Simple health check that works BEFORE DB is ready
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'operational',
     service: 'Poseidon — Superyacht Crew AI',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    agents: ['Cerberus', 'Nereus', 'Plutus', 'Hermes', 'Mentor']
   });
 });
 
-// SPA fallback — serve index.html for any non-API route (Express 5 compatible)
+// Lazy-load API routes — only register after DB init
+let dbReady = false;
+
+app.use('/api/auth', (req, res, next) => {
+  if (!dbReady) { res.status(503).json({ error: 'Starting up, please wait...' }); return; }
+  next();
+});
+app.use('/api/auth', authRoutes);
+app.use('/api/orgs', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/orgs', orgRoutes);
+app.use('/api/vessels', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/vessels', vesselRoutes);
+app.use('/api/crew', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/crew', crewRoutes);
+app.use('/api/certs', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/certs', certRoutes);
+app.use('/api/alerts', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/alerts', alertRoutes);
+app.use('/api/dashboard', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/compliance', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
+app.use('/api/compliance', complianceRoutes);
+
+// Serve frontend
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDist));
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  if (req.path.includes('.')) return next(); // static files
+  if (req.path.includes('.')) return next();
   res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
-// Error handling
 app.use(notFound);
 app.use(errorHandler);
 
-// Wrap entire startup in async for Railway
-async function start(): Promise<void> {
-  // Initialize database (async for sql.js)
-  await initializeDatabase();
-
-  // Auto-seed if no vessels exist
-  const vesselCount = query.prepare('SELECT COUNT(*) as count FROM vessels').get() as any;
-  if (!vesselCount || vesselCount.count === 0) {
-    console.log('[Init] No vessels found — running seed...');
-    const { runSeed } = require('./seed');
-    runSeed();
-    console.log('[Init] Seed complete.');
-  }
-
-  // Schedule agents
-  cron.schedule('0 */6 * * *', async () => {
-    console.log('[Scheduler] Running Cerberus scan...');
-    await cerberusScan();
-  });
-
-  cron.schedule('0 8 * * *', async () => {
-    console.log('[Scheduler] Running Nereus scan...');
-    await nereusScan();
-  });
-
-  // Start listening
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`⚓ Poseidon running on 0.0.0.0:${PORT}`);
-    console.log('   Agents: Cerberus (every 6h), Nereus (daily 8am), Hermes (monthly 1st)');
-
-    setTimeout(async () => {
-      try {
-        console.log('[Startup] Running initial agent scans...');
-        await cerberusScan();
-        await nereusScan();
-        console.log('[Startup] Initial scans complete.');
-      } catch (e: any) {
-        console.error('[Startup] Agent scan error:', e.message);
-      }
-    }, 3000);
-  });
-}
-
-start().catch(e => {
-  console.error('[FATAL] Server startup failed:', e.message, e.stack);
-  process.exit(1);
+// Start server FIRST, then init DB
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`⚓ Poseidon listening on 0.0.0.0:${PORT}`);
+  console.log('Starting database initialization...');
 });
 
-export default app;
+// Initialize database asynchronously
+async function bootstrap(): Promise<void> {
+  try {
+    console.log('[Bootstrap] Initializing database...');
+    await initializeDatabase();
 
+    console.log('[Bootstrap] DB ready — checking for seed...');
+    const vesselCount = query.prepare('SELECT COUNT(*) as count FROM vessels').get() as any;
+    if (!vesselCount || vesselCount.count === 0) {
+      console.log('[Bootstrap] No vessels found — seeding...');
+      const { runSeed } = require('./seed');
+      runSeed();
+      console.log('[Bootstrap] Seed complete.');
+    }
+
+    dbReady = true;
+    console.log('[Bootstrap] All API routes now active.');
+
+    // Schedule agents
+    cron.schedule('0 */6 * * *', async () => { await cerberusScan(); });
+    cron.schedule('0 8 * * *', async () => { await nereusScan(); });
+
+    // Initial scan
+    setTimeout(async () => {
+      try {
+        console.log('[Bootstrap] Running agent scans...');
+        await cerberusScan();
+        await nereusScan();
+        console.log('[Bootstrap] Agent scans complete.');
+      } catch (e: any) { console.error('[Bootstrap] Scan error:', e.message); }
+    }, 3000);
+
+  } catch (e: any) {
+    console.error('[FATAL] Bootstrap failed:', e.message, e.stack);
+    // Server stays up — health check works, API returns 503
+  }
+}
+
+bootstrap();
+
+export default app;
