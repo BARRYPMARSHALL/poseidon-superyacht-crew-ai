@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import cron from 'node-cron';
-import { initializeDatabase } from './database';
+import { initializeDatabase, getDb } from './database';
 import { errorHandler, notFound } from './middleware/auth';
 import authRoutes from './routes/auth';
 import orgRoutes from './routes/orgs';
@@ -17,7 +17,7 @@ import dashboardRoutes from './routes/dashboard';
 import complianceRoutes from './routes/compliance';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
-import db from './database';
+import query from './database';
 import { generateId } from './utils/helpers';
 
 const app = express();
@@ -135,50 +135,36 @@ app.use((req, res, next) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// Initialize database and check if seed needed
-initializeDatabase();
-
-// Auto-seed if no vessels exist (first deploy on Railway / fresh DB)
-const vesselCount = db.prepare('SELECT COUNT(*) as count FROM vessels').get() as any;
-if (vesselCount.count === 0) {
-  console.log('[Init] No vessels found — running seed...');
-  const { runSeed } = require('./seed');
-  runSeed(db, generateId);
-  console.log('[Init] Seed complete.');
-}
-
-// Schedule agents
-// Cerberus: Every 6 hours (cert scanning)
-cron.schedule('0 */6 * * *', async () => {
-  console.log('[Scheduler] Running Cerberus scan...');
-  await cerberusScan();
-});
-
-// Nereus: Daily at 8am (rotation checks)
-cron.schedule('0 8 * * *', async () => {
-  console.log('[Scheduler] Running Nereus scan...');
-  await nereusScan();
-});
-
-// Hermes: Monthly owner report on 1st of each month
-cron.schedule('0 9 1 * *', async () => {
-  console.log('[Scheduler] Generating monthly owner reports...');
-  const { generateOwnerReport } = require('./agents/hermes');
-  const vessels = require('./database').default.prepare('SELECT id FROM vessels WHERE status = \'active\'').all() as any[];
-  for (const v of vessels) {
-    await generateOwnerReport(v.id);
-  }
-});
-
-// Wrap startup in try/catch for Railway debugging
+// Wrap entire startup in async for Railway
 async function start(): Promise<void> {
+  // Initialize database (async for sql.js)
+  await initializeDatabase();
+
+  // Auto-seed if no vessels exist
+  const vesselCount = query.prepare('SELECT COUNT(*) as count FROM vessels').get() as any;
+  if (!vesselCount || vesselCount.count === 0) {
+    console.log('[Init] No vessels found — running seed...');
+    const { runSeed } = require('./seed');
+    runSeed();
+    console.log('[Init] Seed complete.');
+  }
+
+  // Schedule agents
+  cron.schedule('0 */6 * * *', async () => {
+    console.log('[Scheduler] Running Cerberus scan...');
+    await cerberusScan();
+  });
+
+  cron.schedule('0 8 * * *', async () => {
+    console.log('[Scheduler] Running Nereus scan...');
+    await nereusScan();
+  });
+
+  // Start listening
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`⚓ Poseidon running on 0.0.0.0:${PORT}`);
-    console.log(`   DB path: ${process.env.DATABASE_PATH || 'default'}`);
-    console.log(`   Agents: Cerberus (every 6h), Nereus (daily 8am), Hermes (monthly 1st)`);
-    console.log(`   Health: :${PORT}/api/health`);
+    console.log('   Agents: Cerberus (every 6h), Nereus (daily 8am), Hermes (monthly 1st)');
 
-    // Run initial scans on startup
     setTimeout(async () => {
       try {
         console.log('[Startup] Running initial agent scans...');
