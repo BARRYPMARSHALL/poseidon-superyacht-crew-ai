@@ -20,6 +20,7 @@ import recruitmentRoutes from './routes/recruitment';
 import visaRoutes from './routes/visas';
 import rotationRoutes from './routes/rotations';
 import logRoutes from './routes/logs';
+import billingRoutes from './routes/billing';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
 import query from './database';
@@ -58,6 +59,13 @@ app.use(helmet({
 }));
 app.use(cors());
 app.use(compression());
+
+// Capture raw body for Stripe webhook (must be BEFORE express.json)
+app.use('/api/billing/webhook', express.raw({ type: 'application/json' }), (req: any, _res, next) => {
+  req.rawBody = req.body.toString('utf8');
+  next();
+});
+
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 
@@ -108,6 +116,9 @@ app.use('/api/rotations', rotationRoutes);
 
 // Agent Activity Log
 app.use('/api/logs', logRoutes);
+
+// Billing (Stripe)
+app.use('/api/billing', billingRoutes);
 
 // Serve frontend
 const frontendDist = path.join(__dirname, '../../frontend/dist');

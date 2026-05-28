@@ -120,4 +120,9 @@ export const api = {
   getAgentLogs: (vesselId: string, agent?: string, limit?: number) =>
     request(`/logs/${vesselId}${agent && agent !== 'all' ? `?agent=${agent}` : ''}${limit ? `${agent && agent !== 'all' ? '&' : '?'}limit=${limit}` : ''}`),
   getAgentStats: (vesselId: string) => request(`/logs/${vesselId}/stats`),
+
+  // Billing (Stripe)
+  getPlans: () => request('/billing/plans'),
+  createCheckout: (planId: string, successUrl: string, cancelUrl: string) =>
+    request('/billing/checkout', { method: 'POST', body: JSON.stringify({ planId, successUrl, cancelUrl }) }),
 };
