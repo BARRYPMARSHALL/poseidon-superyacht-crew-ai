@@ -4,11 +4,11 @@ WORKDIR /app
 
 # Backend deps
 COPY backend/package*.json backend/
-RUN cd backend && npm install
+RUN cd backend && npm ci --omit=dev
 
 # Frontend deps + build
 COPY frontend/package*.json frontend/
-RUN cd frontend && npm install
+RUN cd frontend && npm ci
 COPY frontend/ frontend/
 RUN cd frontend && npm run build
 
@@ -31,10 +31,14 @@ COPY --from=builder /app/backend /app/backend
 COPY --from=builder /app/frontend/dist /app/frontend/dist
 
 ENV NODE_ENV=production
+
+# Railway sets PORT env var — app reads it
 EXPOSE 3100
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-  CMD node -e "require('http').get('http://localhost:3100/api/health', r => {let d='';r.on('data',c=>d+=c);r.on('end',()=>process.exit(d.includes('operational')?0:1))}).on('error',()=>process.exit(1))"
+# Healthcheck — uses PORT env or falls back to 3100
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
+  CMD sh -c 'PORT=${PORT:-3100}; node -e "require(\"http\").get(\"http://localhost:\" + process.env.PORT + \"/api/health\", r => {let d=\"\";r.on(\"data\",c=>d+=c);r.on(\"end\",()=>process.exit(d.includes(\"operational\")?0:1))}).on(\"error\",()=>process.exit(1))"'
 
-CMD ["node", "/app/backend/node_modules/.bin/tsx", "/app/backend/src/server.ts"]
+# Use npm start script which runs tsx
+WORKDIR /app/backend
+CMD ["npm", "start"]

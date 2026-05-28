@@ -35,7 +35,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 const app = express();
-const PORT = 3100;
+const PORT = parseInt(process.env.PORT || '3100', 10);
 
 // Middleware
 app.use(helmet({
