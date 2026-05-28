@@ -1,12 +1,11 @@
 import initSqlJs from 'sql.js';
-import type { Database as SqlJsDatabase } from 'sql.js';
 import fs from 'fs';
 import path from 'path';
 
 const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '..', 'data', 'poseidon.db');
 const WASM_PATH = path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
 
-let db: SqlJsDatabase;
+let db: any;
 
 function saveDb(): void {
   try {
@@ -15,21 +14,19 @@ function saveDb(): void {
   } catch {}
 }
 
-export function getDb(): SqlJsDatabase {
+export function getDb(): any {
   if (!db) throw new Error('Database not initialized');
   return db;
 }
 
-async function initDb(): Promise<SqlJsDatabase> {
+async function initDb(): Promise<any> {
   const dataDir = path.dirname(DB_PATH);
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-  // Explicitly provide WASM path and config
   const config: any = {};
   if (fs.existsSync(WASM_PATH)) {
     config.wasmBinary = fs.readFileSync(WASM_PATH);
   } else {
-    // Fallback: try locateFile
     config.locateFile = (file: string) => path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', file);
   }
 
@@ -48,7 +45,6 @@ export async function initializeDatabase(): Promise<void> {
   db.run('PRAGMA journal_mode=WAL');
   db.run('PRAGMA foreign_keys=ON');
 
-  // Create tables (same as before)
   const tables = [
     `CREATE TABLE IF NOT EXISTS organizations (id TEXT PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL, email TEXT, phone TEXT, country TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))`,
     `CREATE TABLE IF NOT EXISTS vessels (id TEXT PRIMARY KEY, organization_id TEXT NOT NULL, name TEXT NOT NULL, imo_number TEXT, mmsi TEXT, flag_state TEXT NOT NULL, port_of_registry TEXT, length_m REAL NOT NULL, beam_m REAL, draft_m REAL, gross_tonnage REAL, build_year INTEGER, builder TEXT, max_crew INTEGER DEFAULT 10, max_guests INTEGER DEFAULT 8, current_location TEXT, status TEXT DEFAULT 'active', created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT NOT NULL DEFAULT (datetime('now')))`,

@@ -10,6 +10,10 @@ import CrewDetail from './pages/CrewDetail';
 import CertTracker from './pages/CertTracker';
 import AlertsPage from './pages/AlertsPage';
 import CompliancePage from './pages/CompliancePage';
+import AgentLogPage from './pages/AgentLogPage';
+import PayrollPage from './pages/PayrollPage';
+import RecruitmentPage from './pages/RecruitmentPage';
+import RotationPage from './pages/RotationPage';
 import Layout from './components/Layout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -64,6 +68,10 @@ export default function App() {
           <Route path="certs" element={<CertTracker />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="compliance" element={<CompliancePage />} />
+          <Route path="agent-log" element={<AgentLogPage />} />
+          <Route path="payroll" element={<PayrollPage />} />
+          <Route path="recruitment" element={<RecruitmentPage />} />
+          <Route path="rotations" element={<RotationPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

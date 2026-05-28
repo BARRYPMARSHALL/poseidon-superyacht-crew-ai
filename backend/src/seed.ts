@@ -111,7 +111,7 @@ export function runSeed(): void {
 
   // Demo user (hash pre-computed for 'captain123')
   const userId = generateId();
-  const hash = '$2b$12$k2XhSXt.YQdgT6lhVAsOh.NhB98ZG/hKb8Ts1GgFdNYayOf9EOrfq';
+  const hash = '$2b$12$tRJuFhLXYZj.1B2A6caUe.3z.sZEsHHvUezAuPj6xPanbTlqQglIS';
   const trialEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   db.prepare("INSERT INTO users (id, organization_id, email, password_hash, name, role, vessel_ids, trial_ends_at, subscription_tier) VALUES (?,?,?,?,?,'captain',?,?,'captain')")
     .run(userId, orgId, 'captain@oceanstar.yacht', hash, 'James Mitchell', JSON.stringify([vesselId]), trialEnd);

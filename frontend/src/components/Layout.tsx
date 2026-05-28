@@ -7,6 +7,10 @@ const navItems = [
   { to: '/app/certs', label: 'Certifications', icon: '📜' },
   { to: '/app/alerts', label: 'Alerts', icon: '🔔' },
   { to: '/app/compliance', label: 'Compliance', icon: '🛡️' },
+  { to: '/app/rotations', label: 'Rotations', icon: '🔄' },
+  { to: '/app/payroll', label: 'Finance', icon: '💰' },
+  { to: '/app/recruitment', label: 'Recruitment', icon: '🎯' },
+  { to: '/app/agent-log', label: 'Agent Log', icon: '🤖' },
 ];
 
 export default function Layout({ user, setUser }: { user: any; setUser: (u: any) => void }) {

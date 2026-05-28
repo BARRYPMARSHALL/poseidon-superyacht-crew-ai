@@ -15,6 +15,11 @@ import certRoutes from './routes/certs';
 import alertRoutes from './routes/alerts';
 import dashboardRoutes from './routes/dashboard';
 import complianceRoutes from './routes/compliance';
+import financeRoutes from './routes/finance';
+import recruitmentRoutes from './routes/recruitment';
+import visaRoutes from './routes/visas';
+import rotationRoutes from './routes/rotations';
+import logRoutes from './routes/logs';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
 import query from './database';
@@ -71,6 +76,21 @@ app.use('/api/dashboard', (_req, _res, next) => dbReady ? next() : _res.status(5
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/compliance', (_req, _res, next) => dbReady ? next() : _res.status(503).json({ error: 'Starting up...' }));
 app.use('/api/compliance', complianceRoutes);
+
+// Finance & Payroll (Plutus)
+app.use('/api/finance', financeRoutes);
+
+// Recruitment (Mentor)
+app.use('/api/recruitment', recruitmentRoutes);
+
+// Visas
+app.use('/api/visas', visaRoutes);
+
+// Rotations
+app.use('/api/rotations', rotationRoutes);
+
+// Agent Activity Log
+app.use('/api/logs', logRoutes);
 
 // Serve frontend
 const frontendDist = path.join(__dirname, '../../frontend/dist');

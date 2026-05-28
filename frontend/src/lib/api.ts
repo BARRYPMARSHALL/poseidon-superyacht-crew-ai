@@ -87,4 +87,37 @@ export const api = {
     request(`/agents/hermes/owner-report/${vesselId}`, { method: 'POST' }),
   getOnboarding: (crewId: string) => request(`/agents/hermes/onboarding/${crewId}`),
   getOffboarding: (crewId: string) => request(`/agents/hermes/offboarding/${crewId}`),
+
+  // Finance (Plutus)
+  getPayroll: (vesselId: string) => request(`/finance/payroll/${vesselId}`),
+  processPayroll: (vesselId: string, periodStart: string, periodEnd: string) =>
+    request(`/finance/payroll/${vesselId}`, { method: 'POST', body: JSON.stringify({ period_start: periodStart, period_end: periodEnd }) }),
+  payRecord: (recordId: string) => request(`/finance/payroll/${recordId}/pay`, { method: 'PUT' }),
+  getSEATemplate: (crewId: string) => request(`/finance/sea/${crewId}`),
+  saveSEA: (data: any) => request('/finance/sea', { method: 'POST', body: JSON.stringify(data) }),
+  getSEA: (crewId: string) => request(`/finance/sea/crew/${crewId}`),
+  getBudgetReport: (vesselId: string) =>
+    request(`/finance/budget/${vesselId}`, { method: 'POST' }),
+
+  // Recruitment (Mentor)
+  draftJobDescription: (vesselId: string, position: string, department: string) =>
+    request(`/recruitment/job-description/${vesselId}`, { method: 'POST', body: JSON.stringify({ position, department }) }),
+  screenCVs: (vesselId: string, position: string, candidates: any[]) =>
+    request(`/recruitment/screen/${vesselId}`, { method: 'POST', body: JSON.stringify({ position, candidates }) }),
+  getDevelopmentPlan: (crewId: string) => request(`/recruitment/development/${crewId}`),
+
+  // Visas
+  getVisas: (crewId: string) => request(`/visas/${crewId}`),
+  addVisa: (crewId: string, data: any) =>
+    request(`/visas/${crewId}`, { method: 'POST', body: JSON.stringify(data) }),
+
+  // Rotations
+  getRotations: (vesselId: string) => request(`/rotations/${vesselId}`),
+  saveRotation: (crewId: string, data: any) =>
+    request(`/rotations/${crewId}`, { method: 'POST', body: JSON.stringify(data) }),
+
+  // Agent Log
+  getAgentLogs: (vesselId: string, agent?: string, limit?: number) =>
+    request(`/logs/${vesselId}${agent && agent !== 'all' ? `?agent=${agent}` : ''}${limit ? `${agent && agent !== 'all' ? '&' : '?'}limit=${limit}` : ''}`),
+  getAgentStats: (vesselId: string) => request(`/logs/${vesselId}/stats`),
 };
