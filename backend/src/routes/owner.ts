@@ -1,13 +1,12 @@
 import { Router, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { getDb } from '../database';
+import db from '../database';
 
 const router = Router();
 
 // GET /api/owner/dashboard — Business health at a glance
 router.get('/dashboard', authenticate, async (_req: AuthRequest, res: Response) => {
   try {
-    const db = getDb();
 
     // --- Revenue ---
     const paidUsers = db.prepare(
