@@ -98,6 +98,25 @@ router.get('/dashboard', authenticate, async (_req: AuthRequest, res: Response) 
       `SELECT date(created_at) as day, COUNT(*) as count FROM users WHERE created_at > datetime('now', '-30 days') GROUP BY date(created_at) ORDER BY day`
     ).all() as any[];
 
+    // --- OS Framework: Tacit Knowledge ---
+    const workflowCount = db.prepare(`SELECT COUNT(*) as c FROM workflows`).get() as any;
+    const undocWorkflows = db.prepare(`SELECT COUNT(*) as c FROM workflows WHERE is_documented = 0`).get() as any;
+    const highReadinessWorkflows = db.prepare(`SELECT COUNT(*) as c FROM workflows WHERE ai_readiness >= 7`).get() as any;
+
+    // --- OS Framework: Sensing ---
+    const sensing7d = db.prepare(`SELECT COUNT(*) as c FROM sensing_events WHERE detected_at > datetime('now', '-7 days')`).get() as any;
+    const criticalSensing = db.prepare(`SELECT COUNT(*) as c FROM sensing_events WHERE severity IN ('critical','warning') AND is_actionable = 1 AND resolved_at IS NULL`).get() as any;
+
+    // --- OS Framework: Learning ---
+    const totalOutcomes = db.prepare(`SELECT COUNT(*) as c FROM agent_outcomes`).get() as any;
+    const failedOutcomes = db.prepare(`SELECT COUNT(*) as c FROM agent_outcomes WHERE outcome = 'failure'`).get() as any;
+    const unreviewedOutcomes = db.prepare(`SELECT COUNT(*) as c FROM agent_outcomes WHERE reviewed = 0`).get() as any;
+
+    // --- OS Framework: Governance ---
+    const activeCheckpoints = db.prepare(`SELECT COUNT(*) as c FROM agent_checkpoints WHERE status = 'active'`).get() as any;
+    const pendingReviews = db.prepare(`SELECT COUNT(*) as c FROM human_review_queue WHERE status = 'pending'`).get() as any;
+    const rolledBackCheckpoints = db.prepare(`SELECT COUNT(*) as c FROM agent_checkpoints WHERE status = 'rolled_back'`).get() as any;
+
     res.json({
       revenue: {
         mrr,
@@ -135,6 +154,12 @@ router.get('/dashboard', authenticate, async (_req: AuthRequest, res: Response) 
         signups30d,
       },
       usersByRole,
+      osFramework: {
+        tacitKnowledge: { workflows: workflowCount?.c || 0, undocumented: undocWorkflows?.c || 0, highReadiness: highReadinessWorkflows?.c || 0 },
+        sensing: { events7d: sensing7d?.c || 0, criticalActionable: criticalSensing?.c || 0 },
+        learning: { totalOutcomes: totalOutcomes?.c || 0, failures: failedOutcomes?.c || 0, unreviewed: unreviewedOutcomes?.c || 0 },
+        governance: { activeCheckpoints: activeCheckpoints?.c || 0, pendingReviews: pendingReviews?.c || 0, rolledBack: rolledBackCheckpoints?.c || 0 },
+      },
     });
   } catch (err: any) {
     console.error('[Owner Dashboard] Error:', err.message);

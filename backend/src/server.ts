@@ -24,6 +24,7 @@ import billingRoutes from './routes/billing';
 import growthRoutes from './routes/growth';
 import ownerRoutes from './routes/owner';
 import publicRoutes from './routes/public';
+import osFrameworkRoutes from './routes/os-framework';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
 import { runMarketingCycle } from './agents/marketing';
@@ -132,6 +133,9 @@ app.use('/api/growth', growthRoutes);
 
 // Owner Dashboard (business metrics)
 app.use('/api/owner', ownerRoutes);
+
+// OS Framework (tacit knowledge, sensing, learning, governance)
+app.use('/api/os', osFrameworkRoutes);
 
 // Serve frontend
 const frontendDist = path.join(__dirname, '../../frontend/dist');
