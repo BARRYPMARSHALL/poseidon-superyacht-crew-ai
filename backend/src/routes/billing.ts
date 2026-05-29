@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { createCheckoutSession, handleWebhook, isStripeConfigured, PLANS } from '../billing';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import query from '../database';
 
 const router = Router();
 
@@ -18,8 +19,16 @@ router.post('/checkout', authenticate, async (req: AuthRequest, res: Response) =
       return;
     }
 
-    const userEmail = (req as any).userEmail || 'customer@example.com';
-    const url = await createCheckoutSession(planId, userEmail, successUrl, cancelUrl);
+    const userEmail = (req as any).userEmail;
+    let email = userEmail || 'customer@example.com';
+    // Try to get email from DB if not on request
+    if (email === 'customer@example.com' && req.userId) {
+      try {
+        const user = query.prepare('SELECT email FROM users WHERE id = ?').get(req.userId) as any;
+        if (user) email = user.email;
+      } catch {}
+    }
+    const url = await createCheckoutSession(planId, email, successUrl, cancelUrl);
     res.json({ url });
   } catch (err: any) {
     console.error('[Billing] Checkout error:', err.message);
