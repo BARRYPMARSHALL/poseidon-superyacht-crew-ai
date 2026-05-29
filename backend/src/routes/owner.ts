@@ -8,11 +8,8 @@ const router = Router();
 router.get('/dashboard', authenticate, async (_req: AuthRequest, res: Response) => {
   try {
     const db = getDb();
-    const now = new Date().toISOString().split('T')[0]; // today
 
     // --- Revenue ---
-    const stripeCust = db.exec(`SELECT COUNT(*) as c FROM customers`); // if table exists
-    // Fallback: count users who have subscription_tier
     const paidUsers = db.prepare(
       `SELECT COUNT(*) as c FROM users WHERE subscription_tier IN ('skipper','captain')`
     ).get() as any;
