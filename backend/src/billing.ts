@@ -30,12 +30,14 @@ export const PLANS: PlanConfig[] = [
     id: 'skipper',
     name: 'Skipper',
     price: 499,
+    priceId: 'price_1TcE3A2r99PbDJs0sI5o504r',
     features: ['Up to 15 crew members', 'Cerberus + Nereus agents', 'Basic alerts', 'Email support'],
   },
   {
     id: 'captain',
     name: 'Captain',
     price: 799,
+    priceId: 'price_1TcE3A2r99PbDJs0MfIrb5Uv',
     features: ['Up to 30 crew members', 'All 5 AI agents', 'Full compliance + owner reports', 'Priority support'],
   },
 ];
