@@ -21,6 +21,7 @@ import visaRoutes from './routes/visas';
 import rotationRoutes from './routes/rotations';
 import logRoutes from './routes/logs';
 import billingRoutes from './routes/billing';
+import growthRoutes from './routes/growth';
 import publicRoutes from './routes/public';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
@@ -124,6 +125,9 @@ app.use('/api/billing', billingRoutes);
 
 // Public (no auth — SEO, social proof, status)
 app.use('/api/public', publicRoutes);
+
+// Growth (outreach, Telegram, ads)
+app.use('/api/growth', growthRoutes);
 
 // Serve frontend
 const frontendDist = path.join(__dirname, '../../frontend/dist');

@@ -174,12 +174,51 @@ export async function runMarketingCycle(): Promise<void> {
   // 2. Generate Twitter content for the next post
   console.log('[Marketing] Generating social content...');
   const tweets = await generateTwitterContent();
-  // Store in activity log so the Twitter cron can pick it up
   if (tweets.length > 0) {
     query.prepare(
       `INSERT INTO agent_activity_log (id, vessel_id, agent_name, action_type, action_summary, status, created_at)
        VALUES (?,'system','marketing_agent','content_generated',?,'completed',datetime('now'))`
     ).run(require('crypto').randomUUID(), `Generated ${tweets.length} social posts for queue`);
+  }
+
+  // 3. Run cold outreach
+  console.log('[Marketing] Running cold outreach...');
+  try {
+    const { runColdOutreach } = require('./outreach');
+    const outreachResult = await runColdOutreach();
+    console.log(`[Marketing] Outreach: ${outreachResult.sent} sent, ${outreachResult.errors} errors`);
+  } catch (err: any) {
+    console.error('[Marketing] Outreach error:', err.message);
+  }
+
+  // 4. Send Telegram daily summary
+  console.log('[Marketing] Sending Telegram summaries...');
+  try {
+    const { sendDailyTelegramSummary } = require('./telegram');
+    const telegramSent = await sendDailyTelegramSummary();
+    console.log(`[Marketing] Telegram: ${telegramSent} sent`);
+  } catch (err: any) {
+    console.error('[Marketing] Telegram error:', err.message);
+  }
+
+  // 5. Auto-create ad campaign suggestion
+  console.log('[Marketing] Checking ad campaigns...');
+  try {
+    const { getLocalCampaigns } = require('./ads');
+    const campaigns = await getLocalCampaigns();
+    if (campaigns.length === 0) {
+      console.log('[Marketing] No ad campaigns found — generating suggestion');
+      query.prepare(
+        `INSERT INTO agent_activity_log (id, vessel_id, agent_name, action_type, action_summary, status, created_at)
+         VALUES (?,'system','ads_agent','campaign_suggested',?,'completed',datetime('now'))`
+      ).run(require('crypto').randomUUID(),
+        'No active ad campaigns. Set META_ACCESS_TOKEN and META_AD_ACCOUNT_ID to enable auto-creation.');
+    } else {
+      const active = campaigns.filter((c: any) => c.status === 'active');
+      console.log(`[Marketing] ${active.length} active campaigns, ${campaigns.length} total`);
+    }
+  } catch (err: any) {
+    console.error('[Marketing] Ads check error:', err.message);
   }
 
   console.log('[Marketing] Daily marketing cycle complete.');
