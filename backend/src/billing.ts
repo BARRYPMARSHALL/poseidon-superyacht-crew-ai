@@ -8,7 +8,7 @@ let stripe: any = null;
 export function getStripe(): any {
   if (!stripe) {
     if (!KEY) throw new Error('STRIPE_SECRET_KEY not configured');
-    stripe = new Stripe(KEY, { apiVersion: '2025-04-30' });
+    stripe = new Stripe(KEY);
   }
   return stripe;
 }
