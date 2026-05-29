@@ -14,6 +14,7 @@ import AgentLogPage from './pages/AgentLogPage';
 import PayrollPage from './pages/PayrollPage';
 import RecruitmentPage from './pages/RecruitmentPage';
 import RotationPage from './pages/RotationPage';
+import Subscribe from './pages/Subscribe';
 import Layout from './components/Layout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/" element={getToken() ? <Navigate to="/app" replace /> : <Landing />} />
         <Route path="/login" element={getToken() ? <Navigate to="/app" replace /> : <Login setUser={setUser} />} />
         <Route path="/signup" element={getToken() ? <Navigate to="/app" replace /> : <Signup setUser={setUser} />} />
+        <Route path="/subscribe" element={getToken() ? <Subscribe /> : <Navigate to="/login" replace />} />
 
         {/* Protected app routes */}
         <Route path="/app" element={<ProtectedRoute><Layout user={user} setUser={setUser} /></ProtectedRoute>}>

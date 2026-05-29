@@ -59,10 +59,16 @@ export default function Signup({ setUser }: { setUser: (u: any) => void }) {
             </ol>
           </div>
           <button
-            onClick={() => navigate('/app')}
-            className="w-full bg-[#c9a84c] hover:bg-[#d4b85e] text-[#060d1a] font-bold py-3.5 rounded-xl text-lg transition-all"
+            onClick={() => navigate('/subscribe')}
+            className="w-full bg-[#c9a84c] hover:bg-[#d4b85e] text-[#060d1a] font-bold py-3.5 rounded-xl text-lg transition-all mb-3"
           >
-            Go to Bridge →
+            Choose a Plan →
+          </button>
+          <button
+            onClick={() => navigate('/app')}
+            className="w-full border-2 border-[#c9a84c]/30 text-[#c9a84c] hover:border-[#c9a84c] font-bold py-3.5 rounded-xl text-lg transition-all"
+          >
+            Start Free Trial Instead
           </button>
         </div>
       </div>
