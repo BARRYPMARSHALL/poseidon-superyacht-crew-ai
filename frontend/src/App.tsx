@@ -16,6 +16,7 @@ import RecruitmentPage from './pages/RecruitmentPage';
 import RotationPage from './pages/RotationPage';
 import Subscribe from './pages/Subscribe';
 import Layout from './components/Layout';
+import OwnerDashboard from './pages/OwnerDashboard';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!getToken()) return <Navigate to="/login" replace />;
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="payroll" element={<PayrollPage />} />
           <Route path="recruitment" element={<RecruitmentPage />} />
           <Route path="rotations" element={<RotationPage />} />
+          <Route path="owner" element={<OwnerDashboard />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

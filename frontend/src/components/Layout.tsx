@@ -11,6 +11,7 @@ const navItems = [
   { to: '/app/payroll', label: 'Finance', icon: '💰' },
   { to: '/app/recruitment', label: 'Recruitment', icon: '🎯' },
   { to: '/app/agent-log', label: 'Agent Log', icon: '🤖' },
+  { to: '/app/owner', label: 'Owner', icon: '👑' },
 ];
 
 export default function Layout({ user, setUser }: { user: any; setUser: (u: any) => void }) {
