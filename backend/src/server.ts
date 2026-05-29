@@ -21,8 +21,10 @@ import visaRoutes from './routes/visas';
 import rotationRoutes from './routes/rotations';
 import logRoutes from './routes/logs';
 import billingRoutes from './routes/billing';
+import publicRoutes from './routes/public';
 import { cerberusScan } from './agents/cerberus';
 import { nereusScan } from './agents/nereus';
+import { runMarketingCycle } from './agents/marketing';
 import query from './database';
 
 // Crash handlers — log errors before exit
@@ -120,6 +122,9 @@ app.use('/api/logs', logRoutes);
 // Billing (Stripe)
 app.use('/api/billing', billingRoutes);
 
+// Public (no auth — SEO, social proof, status)
+app.use('/api/public', publicRoutes);
+
 // Serve frontend
 const frontendDist = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(frontendDist));
@@ -159,6 +164,7 @@ async function bootstrap(): Promise<void> {
     // Schedule agents
     cron.schedule('0 */6 * * *', async () => { await cerberusScan(); });
     cron.schedule('0 8 * * *', async () => { await nereusScan(); });
+    cron.schedule('0 7 * * *', async () => { await runMarketingCycle(); });
 
     // Initial scan
     setTimeout(async () => {
