@@ -8,6 +8,7 @@ import {
   logSensingEvent, getSensingEvents, getUrgentEvents,
   generateSensingReport, resolveEvent
 } from '../agents/sensing';
+import type { Category } from '../agents/sensing';
 import {
   logOutcome, getRecentOutcomes, getFailurePatterns,
   generateImprovements, runLearningCycle
@@ -47,14 +48,14 @@ router.post('/tacit/interview', authenticate, async (req: AuthRequest, res: Resp
 
 router.post('/tacit/workflows/:id/readiness', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const score = calculateAiReadiness(req.params.id);
+    const score = calculateAiReadiness(req.params.id as string);
     res.json({ ai_readiness: score });
   } catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
 router.post('/tacit/workflows/:id/automation-plan', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const plan = generateAutomationPlan(req.params.id);
+    const plan = generateAutomationPlan(req.params.id as string);
     res.json(plan);
   } catch (err: any) { res.status(500).json({ error: err.message }); }
 });
@@ -72,7 +73,7 @@ router.post('/sensing/events', authenticate, async (req: AuthRequest, res: Respo
 router.get('/sensing/events', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const vesselId = req.query.vessel_id as string;
-    const category = req.query.category as string | undefined;
+    const category = req.query.category as Category | undefined;
     const actionable = req.query.actionable === 'true' ? true : undefined;
     const days = req.query.days ? parseInt(req.query.days as string) : undefined;
     const events = getSensingEvents(vesselId, category, actionable, days);
@@ -98,7 +99,7 @@ router.get('/sensing/report', authenticate, async (req: AuthRequest, res: Respon
 
 router.post('/sensing/events/:id/resolve', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const event = resolveEvent(req.params.id, req.body.action_taken);
+    const event = resolveEvent(req.params.id as string, req.body.action_taken);
     res.json(event);
   } catch (err: any) { res.status(500).json({ error: err.message }); }
 });

@@ -67,12 +67,12 @@ router.post('/ads/campaigns', authenticate, async (req: AuthRequest, res: Respon
 });
 
 router.post('/ads/campaigns/:id/activate', authenticate, async (req: AuthRequest, res: Response) => {
-  const result = await activateCampaign(req.params.id);
+  const result = await activateCampaign(req.params.id as string);
   res.json(result);
 });
 
 router.get('/ads/campaigns/:id/insights', authenticate, async (req: AuthRequest, res: Response) => {
-  const insights = await getCampaignInsights(req.params.id);
+  const insights = await getCampaignInsights(req.params.id as string);
   res.json(insights);
 });
 

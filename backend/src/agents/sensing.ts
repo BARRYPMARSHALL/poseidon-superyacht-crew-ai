@@ -23,7 +23,7 @@ interface SensingEvent {
   created_at: string;
 }
 
-type Category = 'competitor' | 'regulation' | 'market' | 'technology' | 'customer';
+export type Category = 'competitor' | 'regulation' | 'market' | 'technology' | 'customer';
 type Severity = 'info' | 'warning' | 'critical';
 
 /**

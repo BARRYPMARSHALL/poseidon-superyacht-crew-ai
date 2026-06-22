@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { api, setToken, getToken } from './lib/api';
+import '../src/styles/theme.css';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -43,12 +44,44 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060d1a] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⚓</div>
-          <div className="text-[#c9a84c] text-lg font-semibold">Poseidon</div>
-          <div className="text-[#8b9bb4] text-sm mt-2">Superyacht Crew AI</div>
-          <div className="mt-4 w-8 h-8 border-2 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto" />
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--bg-primary)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <svg width="48" height="48" viewBox="0 0 100 100" fill="none" style={{ margin: '0 auto 16px' }}>
+            <circle cx="50" cy="50" r="46" stroke="var(--brass-500)" strokeWidth="2" fill="none" opacity="0.3" />
+            <polygon points="50,18 68,68 32,68" fill="var(--brass-500)" opacity="0.8" />
+          </svg>
+          <div
+            style={{
+              color: 'var(--brass-500)',
+              fontSize: '1.5rem',
+              fontWeight: 600,
+              fontFamily: 'var(--font-display)',
+            }}
+          >
+            Poseidon
+          </div>
+          <div style={{ color: 'var(--navy-200)', fontSize: '0.875rem', marginTop: '4px' }}>
+            Superyacht Crew AI
+          </div>
+          <div
+            style={{
+              margin: '20px auto 0',
+              width: 32,
+              height: 32,
+              border: '3px solid var(--brass-500)',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
         </div>
       </div>
     );
