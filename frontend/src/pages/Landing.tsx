@@ -174,6 +174,14 @@ const plans = [
   { tier: 'Fleet', price: null, crew: 'Unlimited', agents: 'All + white-label', reports: 'Fleet analytics', support: 'Dedicated + SLA', highlight: false },
 ];
 
+/* ── Image URLs ── */
+const IMAGES = {
+  superyacht: 'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=1200&q=80',
+  captainWorking: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&q=80',
+  happyCaptain: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+  oceanHorizon: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=1200&q=80',
+};
+
 export default function Landing() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', fontFamily: 'var(--font-body)' }}>
@@ -197,12 +205,22 @@ export default function Landing() {
       </nav>
 
       {/* ============================== HERO ============================== */}
-      <section className="relative pt-32 pb-24 px-6 overflow-hidden">
-        {/* Radial gradient hero background */}
-        <div className="radial-glow absolute inset-0 opacity-60" />
+      <section className="relative pt-32 pb-24 px-6 overflow-hidden min-h-[90vh] flex items-center">
+        {/* Superyacht background image with dark gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(3,10,30,0.85) 0%, rgba(3,10,30,0.60) 40%, rgba(3,10,30,0.85) 100%), url(${IMAGES.superyacht})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          aria-hidden="true"
+        />
+        {/* Radial glow overlay */}
+        <div className="radial-glow absolute inset-0 opacity-40" />
         <div className="grid-pattern absolute inset-0 opacity-50" />
 
-        <div className="max-w-7xl mx-auto relative">
+        <div className="max-w-7xl mx-auto relative z-10 w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left copy */}
             <div className="animate-fade-in">
@@ -298,71 +316,104 @@ export default function Landing() {
       </section>
 
       {/* ============================== THE PAIN ============================== */}
-      <section className="py-24 px-6" style={{ backgroundColor: 'var(--bg-secondary)' }} id="pain">
+      <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }} id="pain">
+        {/* Split layout: left content, right captain image */}
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 animate-fade-in">
-            <div className="flex items-center justify-center gap-2 mb-4" style={{ color: 'var(--brass-500)' }}>
-              <ZapIcon className="w-4 h-4" />
-              <span className="text-xs tracking-[0.2em] uppercase font-medium">You Know This Feeling</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-              It&apos;s 10pm. You&apos;re on rotation leave.<br />And you&apos;re checking a spreadsheet.
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--navy-200)' }}>
-              You were supposed to be off for two weeks. But Marco&apos;s PSCRB expires in 12 days.
-              Sarah&apos;s Schengen clock is ticking. The owner wants the monthly ops report by Friday.
-            </p>
-            <p className="text-sm mt-4 font-medium" style={{ color: 'var(--brass-500)' }}>
-              62% of captains work during their leave. You&apos;re not alone. But you shouldn&apos;t have to.
-              <span className="block mt-1 text-xs" style={{ color: 'var(--navy-200)', opacity: 0.5 }}>— Quay Group Captain Survey 2025/26, 367 captains</span>
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <ZapIcon className="w-6 h-6" />,
-                title: 'The 2AM Thought',
-                quote: '"Did I miss a cert expiry? If port state control boards tomorrow..."',
-                result: 'Poseidon scans every 6 hours. You sleep.',
-                borderColor: 'rgba(248,113,113,0.15)',
-                hoverBorder: 'rgba(248,113,113,0.25)',
-              },
-              {
-                icon: <CertShieldIcon className="w-6 h-6" />,
-                title: 'The Inspection Dread',
-                quote: '"MLC audit in 3 days. I need every crew file, SEA, and cert. Two days of paperwork."',
-                result: 'One click. Findings + recommendations in seconds.',
-                borderColor: 'rgba(248,113,113,0.15)',
-                hoverBorder: 'rgba(248,113,113,0.25)',
-              },
-              {
-                icon: <MailIcon className="w-6 h-6" />,
-                title: 'The Inbox Abyss',
-                quote: '"Three crew contracts ending this quarter. Job posts, CV screening, interviews. Where do I start?"',
-                result: 'Mentor agent drafts JDs, screens CVs, schedules interviews.',
-                borderColor: 'rgba(248,113,113,0.15)',
-                hoverBorder: 'rgba(248,113,113,0.25)',
-              },
-            ].map((card, i) => (
-              <div
-                key={i}
-                className="card animate-slide-up"
-                style={{
-                  borderColor: card.borderColor,
-                  backgroundColor: 'rgba(15,31,61,0.3)',
-                  backdropFilter: 'blur(8px)',
-                }}
-                onMouseOver={e => { e.currentTarget.style.borderColor = card.hoverBorder; }}
-                onMouseOut={e => { e.currentTarget.style.borderColor = card.borderColor; }}
-              >
-                <div style={{ color: '#f87171' }} className="mb-3">{card.icon}</div>
-                <h3 className="text-sm font-semibold mb-2 tracking-wide" style={{ color: '#f87171' }}>{card.title}</h3>
-                <p className="italic text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>{card.quote}</p>
-                <div className="h-px mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
-                <p className="text-xs font-medium" style={{ color: 'var(--teal-500)' }}>{card.result}</p>
+          <div className="grid lg:grid-cols-5 gap-10 items-center">
+            {/* Left: pain content (3/5 width) */}
+            <div className="lg:col-span-3">
+              <div className="text-center lg:text-left mb-12 animate-fade-in">
+                <div className="flex items-center justify-center lg:justify-start gap-2 mb-4" style={{ color: 'var(--brass-500)' }}>
+                  <ZapIcon className="w-4 h-4" />
+                  <span className="text-xs tracking-[0.2em] uppercase font-medium">You Know This Feeling</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+                  It&apos;s 10pm. You&apos;re on rotation leave.<br />And you&apos;re checking a spreadsheet.
+                </h2>
+                <p className="text-lg max-w-2xl mx-auto lg:mx-0" style={{ color: 'var(--navy-200)' }}>
+                  You were supposed to be off for two weeks. But Marco&apos;s PSCRB expires in 12 days.
+                  Sarah&apos;s Schengen clock is ticking. The owner wants the monthly ops report by Friday.
+                </p>
+                <p className="text-sm mt-4 font-medium" style={{ color: 'var(--brass-500)' }}>
+                  62% of captains work during their leave. You&apos;re not alone. But you shouldn&apos;t have to.
+                  <span className="block mt-1 text-xs" style={{ color: 'var(--navy-200)', opacity: 0.5 }}>— Quay Group Captain Survey 2025/26, 367 captains</span>
+                </p>
               </div>
-            ))}
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  {
+                    icon: <ZapIcon className="w-6 h-6" />,
+                    title: 'The 2AM Thought',
+                    quote: '"Did I miss a cert expiry? If port state control boards tomorrow..."',
+                    result: 'Poseidon scans every 6 hours. You sleep.',
+                    borderColor: 'rgba(248,113,113,0.15)',
+                    hoverBorder: 'rgba(248,113,113,0.25)',
+                  },
+                  {
+                    icon: <CertShieldIcon className="w-6 h-6" />,
+                    title: 'The Inspection Dread',
+                    quote: '"MLC audit in 3 days. I need every crew file, SEA, and cert. Two days of paperwork."',
+                    result: 'One click. Findings + recommendations in seconds.',
+                    borderColor: 'rgba(248,113,113,0.15)',
+                    hoverBorder: 'rgba(248,113,113,0.25)',
+                  },
+                  {
+                    icon: <MailIcon className="w-6 h-6" />,
+                    title: 'The Inbox Abyss',
+                    quote: '"Three crew contracts ending this quarter. Job posts, CV screening, interviews. Where do I start?"',
+                    result: 'Mentor agent drafts JDs, screens CVs, schedules interviews.',
+                    borderColor: 'rgba(248,113,113,0.15)',
+                    hoverBorder: 'rgba(248,113,113,0.25)',
+                  },
+                ].map((card, i) => (
+                  <div
+                    key={i}
+                    className="card animate-slide-up"
+                    style={{
+                      borderColor: card.borderColor,
+                      backgroundColor: 'rgba(15,31,61,0.3)',
+                      backdropFilter: 'blur(8px)',
+                    }}
+                    onMouseOver={e => { e.currentTarget.style.borderColor = card.hoverBorder; }}
+                    onMouseOut={e => { e.currentTarget.style.borderColor = card.borderColor; }}
+                  >
+                    <div style={{ color: '#f87171' }} className="mb-3">{card.icon}</div>
+                    <h3 className="text-sm font-semibold mb-2 tracking-wide" style={{ color: '#f87171' }}>{card.title}</h3>
+                    <p className="italic text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>{card.quote}</p>
+                    <div className="h-px mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+                    <p className="text-xs font-medium" style={{ color: 'var(--teal-500)' }}>{card.result}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Captain working late image (2/5 width) */}
+            <div className="lg:col-span-2 hidden lg:block animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <div className="relative group rounded-2xl overflow-hidden" style={{ border: '2px solid var(--brass-500)' }}>
+                <div className="overflow-hidden rounded-2xl">
+                  <img
+                    src={IMAGES.captainWorking}
+                    alt="Captain working late managing crew compliance and certifications"
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    style={{ minHeight: '500px', maxHeight: '600px' }}
+                  />
+                </div>
+                {/* Subtle gradient overlay for readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-900/40 to-transparent pointer-events-none" />
+                {/* Caption overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <p className="text-xs" style={{ color: 'var(--navy-200)', opacity: 0.7 }}>
+                    Photo by{' '}
+                    <a href="https://unsplash.com/photos/1517457373958-b7bdd4587205" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">
+                      Laurenz Kleinheider
+                    </a>{' '}
+                    on Unsplash
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -422,6 +473,82 @@ export default function Landing() {
           <p className="text-center text-sm mt-8 italic" style={{ color: 'var(--brass-500)' }}>
             &ldquo;The AI doesn&apos;t replace your judgment. It replaces your remembering.&rdquo;
           </p>
+        </div>
+      </section>
+
+      {/* ============================== THE RELIEF / TESTIMONIAL ============================== */}
+      <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 animate-fade-in">
+            <div className="flex items-center justify-center gap-2 mb-4" style={{ color: 'var(--brass-500)' }}>
+              <QuoteIcon className="w-4 h-4" />
+              <span className="text-xs tracking-[0.2em] uppercase font-medium">The Relief</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+              What captains say after switching.
+            </h2>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Happy captain image */}
+            <div className="relative group animate-fade-in">
+              <div className="relative overflow-hidden rounded-2xl" style={{ border: '2px solid var(--brass-500)' }}>
+                <img
+                  src={IMAGES.happyCaptain}
+                  alt="Happy captain enjoying time off after Poseidon automated crew admin"
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  style={{ minHeight: '420px', maxHeight: '520px' }}
+                />
+                {/* Glass overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-900/30 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <p className="text-xs" style={{ color: 'var(--navy-200)', opacity: 0.7 }}>
+                    Photo by{' '}
+                    <a href="https://unsplash.com/photos/1476514525535-07fb3b4ae5f1" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">
+                      Toa Heftiba
+                    </a>{' '}
+                    on Unsplash
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Testimonial */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.15s' }}>
+              <div
+                className="card !p-8 relative backdrop-blur-xl"
+                style={{
+                  backgroundColor: 'rgba(15,31,61,0.4)',
+                  borderColor: 'var(--border-glass)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                }}
+              >
+                <div className="w-10 h-10 mb-4" style={{ color: 'var(--brass-500)', opacity: 0.3 }}>
+                  <QuoteIcon className="w-full h-full" />
+                </div>
+                <blockquote className="text-lg leading-relaxed mb-6" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+                  &ldquo;I used to spend my first three days back on leave catching up on certs, schedules, and owner reports.
+                  Poseidon handles all of it. Now I actually get off the boat when we dock.&rdquo;
+                </blockquote>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: 'var(--brass-500)', color: 'var(--text-on-brass)' }}
+                  >
+                    MC
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Marcus C.</div>
+                    <div className="text-xs" style={{ color: 'var(--navy-200)' }}>Chief Officer, 68m motor yacht</div>
+                  </div>
+                </div>
+                {/* Decorative brass border accent */}
+                <div className="absolute top-0 left-8 right-8 h-0.5" style={{ backgroundColor: 'var(--brass-500)', opacity: 0.3 }} />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -571,8 +698,18 @@ export default function Landing() {
 
       {/* ============================== CTA ============================== */}
       <section className="py-32 px-6 relative overflow-hidden">
-        <div className="radial-glow absolute inset-0" />
-        <div className="max-w-3xl mx-auto text-center relative animate-slide-up">
+        {/* Ocean horizon background with dark overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, rgba(3,10,30,0.7) 0%, rgba(3,10,30,0.85) 100%), url(${IMAGES.oceanHorizon})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          aria-hidden="true"
+        />
+        <div className="radial-glow absolute inset-0 opacity-30" />
+        <div className="max-w-3xl mx-auto text-center relative animate-slide-up z-10">
           <h2 className="text-3xl sm:text-5xl font-bold mb-8 leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
             You didn&apos;t become a captain<br />
             <span className="text-gradient">to spend your leave doing paperwork.</span>
@@ -598,12 +735,21 @@ export default function Landing() {
             <AnchorIcon className="w-4 h-4" style={{ color: 'var(--brass-500)' }} />
             <span>Poseidon — Superyacht Crew AI</span>
           </div>
-          <div className="flex gap-6 text-sm" style={{ color: 'var(--navy-200)', opacity: 0.5 }}>
-            <a href="#" className="hover:opacity-100 transition-opacity">Privacy</a>
-            <a href="#" className="hover:opacity-100 transition-opacity">Terms</a>
-            <a href="#" className="hover:opacity-100 transition-opacity">Contact</a>
-            <span>&copy; 2026 Poseidon Maritime Technologies</span>
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-xs" style={{ color: 'var(--navy-200)', opacity: 0.5 }}>
+            <span>Photos by{' '}
+              <a href="https://unsplash.com/photos/1494774157365-9e04c6720e47" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">John-Mark Smith</a>,{' '}
+              <a href="https://unsplash.com/photos/1517457373958-b7bdd4587205" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Laurenz Kleinheider</a>,{' '}
+              <a href="https://unsplash.com/photos/1476514525535-07fb3b4ae5f1" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Toa Heftiba</a>,{' '}
+              <a href="https://unsplash.com/photos/1505228395891-9a51e7e86bf6" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Jonatan Pie</a>
+              {' '}on Unsplash
+            </span>
           </div>
+        </div>
+        <div className="max-w-7xl mx-auto mt-4 flex flex-col sm:flex-row items-center justify-center gap-6 text-xs" style={{ color: 'var(--navy-200)', opacity: 0.35 }}>
+          <a href="#" className="hover:opacity-100 transition-opacity">Privacy</a>
+          <a href="#" className="hover:opacity-100 transition-opacity">Terms</a>
+          <a href="#" className="hover:opacity-100 transition-opacity">Contact</a>
+          <span>&copy; 2026 Poseidon Maritime Technologies</span>
         </div>
       </footer>
     </div>
