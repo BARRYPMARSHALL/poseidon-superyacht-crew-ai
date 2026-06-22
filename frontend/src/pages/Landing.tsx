@@ -176,7 +176,7 @@ const plans = [
 
 /* ── Image URLs ── */
 const IMAGES = {
-  superyacht: 'https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=1200&q=80',
+  superyacht: 'https://images.pexels.com/photos/31383420/pexels-photo-31383420.jpeg?auto=compress&cs=tinysrgb&w=1920',
   captainWorking: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&q=80',
   happyCaptain: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
   oceanHorizon: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=1200&q=80',
@@ -737,11 +737,11 @@ export default function Landing() {
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 text-xs" style={{ color: 'var(--navy-200)', opacity: 0.5 }}>
             <span>Photos by{' '}
-              <a href="https://unsplash.com/photos/1494774157365-9e04c6720e47" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">John-Mark Smith</a>,{' '}
+              <a href="https://www.pexels.com/photo/luxury-yacht-in-monaco-harbor-view-31383420/" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Raouf Meftah / Pexels</a>,{' '}
               <a href="https://unsplash.com/photos/1517457373958-b7bdd4587205" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Laurenz Kleinheider</a>,{' '}
               <a href="https://unsplash.com/photos/1476514525535-07fb3b4ae5f1" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Toa Heftiba</a>,{' '}
               <a href="https://unsplash.com/photos/1505228395891-9a51e7e86bf6" target="_blank" rel="noopener noreferrer" className="underline hover:text-brass-500 transition-colors">Jonatan Pie</a>
-              {' '}on Unsplash
+              {' '}on Unsplash &amp; Pexels
             </span>
           </div>
         </div>
